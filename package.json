@@ -1,0 +1,38 @@
+{
+  "name": "wav-helpers",
+  "version": "0.0.1",
+  "description": "Wav helpers",
+  "scripts": {
+    "start": "NODE_ENV=development gulp",
+    "build": "NODE_ENV=production gulp build",
+    "lint": "standard --fix && stylelint --fix '**/*.scss'"
+  },
+  "author": "Diego Morales",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "autoprefixer": "^9.7.4",
+    "babel-loader": "^8.1.0",
+    "browser-sync": "^2.26.7",
+    "cssnano": "^4.1.10",
+    "del": "^5.0.0",
+    "gulp": "^4.0.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-rev": "^9.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-stylelint": "^13.0.0",
+    "gulp-svg-sprite": "^1.5.0",
+    "preprocess": "^3.1.0",
+    "rev-hash": "^3.0.0",
+    "standard": "^14.3.3",
+    "stylelint": "^13.2.1",
+    "stylelint-config-standard-scss": "^1.1.0",
+    "stylelint-scss": "^3.16.0",
+    "webpack": "^4.42.0"
+  },
+  "dependencies": {
+    "zorrojs": "0.0.14"
+  }
+}
