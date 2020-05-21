@@ -16,21 +16,6 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, paths.buildJs)
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: {
-          loader: './tasks/preprocess-loader.js',
-          options: {
-            context: {
-              NODE_ENV: process.env.NODE_ENV
-            }
-          }
-        }
-      }
-    ]
-  },
   optimization: {
     minimizer: [
       new TerserPlugin({
@@ -44,6 +29,6 @@ module.exports = {
     ]
   },
   resolve: {
-    modules: ['node_modules', paths.dev]
+    modules: ['node_modules', paths.devJs]
   }
 }
