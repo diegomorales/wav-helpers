@@ -3,6 +3,9 @@ module.exports = {
   get devComponents () {
     return this.dev + 'components/'
   },
+  get devTemplates () {
+    return this.dev + 'templates/'
+  },
   get devPages () {
     return this.dev + 'pages/'
   },

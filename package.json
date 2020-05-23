@@ -24,6 +24,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-stylelint": "^13.0.0",
     "gulp-svg-sprite": "^1.5.0",
+    "nunjucks": "^3.2.1",
     "preprocess": "^3.1.0",
     "rev-hash": "^3.0.0",
     "standard": "^14.3.3",

@@ -18,7 +18,7 @@ const build = series(cleanBuild, parallel(buildJs), copyIndex)
 const watchTask = series(build, () => {
   startServer()
 
-  watch([paths.dev + 'index.html'], series(copyIndex, reload))
+  watch([paths.devTemplates + '**/*.njk'], series(copyIndex, reload))
   // watch([paths.devScss + '**/*.scss', paths.devComponents + '**/*.scss'], buildScss)
   // watch([paths.devAssets + '**/*.*', `!${paths.devAssets}svg/*.*`], series(copyAssets, reload))
   // watch([paths.devAssets + 'svg/*.*'], series(buildSvgSprite, reload))
