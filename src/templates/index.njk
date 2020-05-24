@@ -1,3 +1,5 @@
+{% import "macros.njk" as m %}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -30,11 +32,10 @@
 </header>
 
 <main>
-  <section id="mono2stereo">
+  {% call m.helperSection('mono2stereo') %}
     {% include 'mono2stereo.njk' %}
-  </section>
+  {% endcall %}
 </main>
-
 
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es5%2Ces6%2Ces7"></script>
 <script src="/{{ manifest['js/main.js'] }}"></script>

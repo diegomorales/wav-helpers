@@ -4,7 +4,6 @@
 @import "abstracts/mixins";
 @import "abstracts/text-sizes";
 @import "abstracts/spacings";
-
 @import "vendor/normalize";
 @import "base/reset";
 
@@ -16,3 +15,7 @@
 // Layout
 @import "layout/grid/grid-base";
 @import "layout/grid/grid";
+@import "layout/site-header";
+
+// Components
+@import "components/helper-section";
