@@ -10,10 +10,10 @@ const copyIndex = require('./tasks/copy-index')
 const buildScss = require('./tasks/build-scss')
 const buildJs = require('./tasks/build-js')
 // const buildSvgSprite = require('./tasks/build-svg-sprite')
-// const buildManifest = require('./tasks/build-manifest')
+const buildManifest = require('./tasks/build-manifest')
 const copyAccess = require('./tasks/copy-access')
 
-const build = series(cleanBuild, parallel(buildJs, buildScss), copyIndex)
+const build = series(cleanBuild, parallel(buildJs, buildScss), buildManifest, copyIndex)
 
 const watchTask = series(build, () => {
   startServer()

@@ -1,20 +1,22 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <title>WAV Helpers</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-  <link href="/css/main.css" rel="stylesheet">
+  {% if isProd -%}
+  <style>{{ inlineStyle | trim }}</style>
+  {%- else %}
+  <link href="/{{ manifest['css/main.css'] }}" rel="stylesheet">
+  {%- endif %}
 </head>
-
 <body>
 
 {% include 'mono2stereo.njk' %}
 
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es5%2Ces6%2Ces7"></script>
-<script src="/js/main.js"></script>
+<script src="/{{ manifest['js/main.js'] }}"></script>
 </body>
 </html>
