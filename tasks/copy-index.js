@@ -3,7 +3,7 @@ const fs = require('fs')
 const nunjucks = require('nunjucks')
 
 module.exports = function copyIndex (done) {
-  const isProd = process.env.NODE_ENV === 'production'
+  // const isProd = process.env.NODE_ENV === 'production'
   // const manifest = require('../build/rev-manifest')
 
   const env = nunjucks.configure(paths.devTemplates)

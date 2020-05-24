@@ -1,19 +1,14 @@
-import { merge } from 'zorrojs';
-
-const defaults = {}
-
 const config = {
   leftChannel: '[data-left]',
   rightChannel: '[data-right]',
   convertBtn: '[data-convert]'
 }
 
-const factory = (el, options = {}) => {
+const factory = (el) => {
   const instance = {}
-  const settings = merge({}, defaults, options)
   const leftChannel = el.querySelector(config.leftChannel)
   const rightChannel = el.querySelector(config.rightChannel)
-  const convertBtn = el.querySelector(config.convertBtn);
+  const convertBtn = el.querySelector(config.convertBtn)
   let duration = 0
   let leftBuffer
   let rightBuffer
@@ -27,7 +22,7 @@ const factory = (el, options = {}) => {
   }
 
   const onLoadLeft = (e) => {
-    let file = e.target.files[0];
+    const file = e.target.files[0]
 
     file.arrayBuffer()
       .then(result => audiocontext.decodeAudioData(result))
@@ -42,7 +37,7 @@ const factory = (el, options = {}) => {
   }
 
   const onLoadRight = (e) => {
-    let file = e.target.files[0];
+    const file = e.target.files[0]
 
     file.arrayBuffer()
       .then(result => audiocontext.decodeAudioData(result))
@@ -59,9 +54,9 @@ const factory = (el, options = {}) => {
   const onClick = () => {
     const offlineContext = new window.OfflineAudioContext(2, duration * 44100, 44100)
 
-    let leftSource = offlineContext.createBufferSource()
-    let rightSource = offlineContext.createBufferSource()
-    let merger = offlineContext.createChannelMerger(2)
+    const leftSource = offlineContext.createBufferSource()
+    const rightSource = offlineContext.createBufferSource()
+    const merger = offlineContext.createChannelMerger(2)
     leftSource.buffer = leftBuffer
     rightSource.buffer = rightBuffer
 
@@ -86,17 +81,17 @@ const factory = (el, options = {}) => {
     leftChannel.addEventListener('change', onLoadLeft)
     rightChannel.addEventListener('change', onLoadRight)
 
-    convertBtn.addEventListener('click', onClick);
+    convertBtn.addEventListener('click', onClick)
   }
 
   const createDownload = (audioBuffer, samples) => {
-    let newAudioFile = URL.createObjectURL(bufferToWave(audioBuffer, samples));
+    const newAudioFile = URL.createObjectURL(bufferToWave(audioBuffer, samples))
     let link = document.createElement('a')
     link.href = newAudioFile
     link.setAttribute('download', 'stereo.wav')
     link.style.display = 'none'
 
-    link = el.appendChild(link);
+    link = el.appendChild(link)
     link.click()
 
     el.removeChild(link)
@@ -116,56 +111,55 @@ export {
   factory as mono2Stereo
 }
 
-function bufferToWave(abuffer, len) {
-  var numOfChan = abuffer.numberOfChannels,
-    length = len * numOfChan * 2 + 44,
-    buffer = new ArrayBuffer(length),
-    view = new DataView(buffer),
-    offset = 0,
-    channels = [], i, sample,
-    pos = 0;
+function bufferToWave (abuffer, len) {
+  var numOfChan = abuffer.numberOfChannels
+  var length = len * numOfChan * 2 + 44
+  var buffer = new ArrayBuffer(length)
+  var view = new DataView(buffer)
+  var offset = 0
+  var channels = []; var i; var sample
+  var pos = 0
 
   // write WAVE header - total offset will be 44 bytes - see chart at http://soundfile.sapp.org/doc/WaveFormat/
-  setUint32(0x46464952);                         // "RIFF"
-  setUint32(length - 8);                         // file length - 8
-  setUint32(0x45564157);                         // "WAVE"
+  setUint32(0x46464952) // "RIFF"
+  setUint32(length - 8) // file length - 8
+  setUint32(0x45564157) // "WAVE"
 
-  setUint32(0x20746d66);                         // "fmt " chunk
-  setUint32(16);                                 // length = 16
-  setUint16(1);                                  // PCM (uncompressed)
-  setUint16(numOfChan);
-  setUint32(abuffer.sampleRate);
-  setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
-  setUint16(numOfChan * 2);                      // block-align
-  setUint16(16);                                 // 16-bit (hardcoded in this demo)
+  setUint32(0x20746d66) // "fmt " chunk
+  setUint32(16) // length = 16
+  setUint16(1) // PCM (uncompressed)
+  setUint16(numOfChan)
+  setUint32(abuffer.sampleRate)
+  setUint32(abuffer.sampleRate * 2 * numOfChan) // avg. bytes/sec
+  setUint16(numOfChan * 2) // block-align
+  setUint16(16) // 16-bit (hardcoded in this demo)
 
-  setUint32(0x61746164);                         // "data" - chunk
-  setUint32(length - pos - 4);                   // chunk length
+  setUint32(0x61746164) // "data" - chunk
+  setUint32(length - pos - 4) // chunk length
 
   // write interleaved data
-  for(i = 0; i < abuffer.numberOfChannels; i++)
-    channels.push(abuffer.getChannelData(i));
+  for (i = 0; i < abuffer.numberOfChannels; i++) { channels.push(abuffer.getChannelData(i)) }
 
-  while(pos < length) {
-    for(i = 0; i < numOfChan; i++) {             // interleave channels
-      sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
-      sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
-      view.setInt16(pos, sample, true);          // update data chunk
-      pos += 2;
+  while (pos < length) {
+    for (i = 0; i < numOfChan; i++) { // interleave channels
+      sample = Math.max(-1, Math.min(1, channels[i][offset])) // clamp
+      sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0 // scale to 16-bit signed int
+      view.setInt16(pos, sample, true) // update data chunk
+      pos += 2
     }
-    offset++                                     // next source sample
+    offset++ // next source sample
   }
 
   // create Blob
-  return new Blob([buffer], {type: "audio/wav"});
+  return new window.Blob([buffer], { type: 'audio/wav' })
 
-  function setUint16(data) {
-    view.setUint16(pos, data, true);
-    pos += 2;
+  function setUint16 (data) {
+    view.setUint16(pos, data, true)
+    pos += 2
   }
 
-  function setUint32(data) {
-    view.setUint32(pos, data, true);
-    pos += 4;
+  function setUint32 (data) {
+    view.setUint32(pos, data, true)
+    pos += 4
   }
 }
