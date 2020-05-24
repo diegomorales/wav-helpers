@@ -14,10 +14,27 @@
 </head>
 <body>
 
-<div class="container">
-  <h1>WAV helpers</h1>
-{% include 'mono2stereo.njk' %}
-</div>
+<header class="site-header">
+  <div class="container">
+    <h1 class="tx-large sp-l">WAV helpers</h1>
+    <p class="tx-body sp-m">All audio manipulation is done in the browser using the Web Audio API. No data is sent to the server.</p>
+
+    <nav>
+      <ul class="sp-m">
+        <li>
+          <a href="#mono2stereo">Convert two mono tracks to a stereo track</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="mono2stereo">
+    {% include 'mono2stereo.njk' %}
+  </section>
+</main>
+
 
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es5%2Ces6%2Ces7"></script>
 <script src="/{{ manifest['js/main.js'] }}"></script>

@@ -5,3 +5,25 @@
 .visuallyhidden {
   @include visuallyhidden;
 }
+
+// Text sizes
+.tx-large {
+  @include tx-large;
+}
+
+.tx-medium {
+  @include tx-medium;
+}
+
+.tx-body {
+  @include tx-body;
+}
+
+// Spacings
+.sp-l {
+  @include space-large;
+}
+
+.sp-m {
+  @include space-medium;
+}

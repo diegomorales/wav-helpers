@@ -1,0 +1,11 @@
+@mixin space-large {
+  margin-bottom: rem(60);
+}
+
+@mixin space-medium {
+  margin-bottom: rem(40);
+}
+
+@mixin space-xsmall {
+  margin-bottom: rem(12);
+}

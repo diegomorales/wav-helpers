@@ -1,0 +1,29 @@
+@mixin tx-large {
+  font-size: rem(32);
+  line-height: 1;
+  font-weight: normal;
+}
+
+@mixin tx-medium {
+  font-size: rem(24);
+  line-height: 1.1;
+  font-weight: normal;
+}
+
+@mixin tx-body {
+  font-size: rem(16);
+  line-height: 1.33;
+  font-weight: normal;
+}
+
+@mixin tx-small {
+  font-size: rem(14);
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+@mixin tx-caption {
+  font-size: rem(14);
+  font-weight: bold;
+  line-height: 1.2;
+}
