@@ -1,20 +1,23 @@
-<article class="container">
-  <h1 class="tx-medium sp-m">Two Mono To Stereo</h1>
+<article class="helper-module" data-module="m2st">
+  <div class="container">
+    <h1 class="tx-medium sp-m">Convert two mono tracks to a stereo track</h1>
 
-  <div data-module="m2st">
-    <label>
-      LEFT
-      <input type="file" accept="audio/wav,audio/mp3,audio/ogg,audio/webm,audio/aac,audio/x-m4a,audio/flac,audio/aiff,audio/mpeg" data-left>
-    </label>
+    <div class="row">
+      <div class="col-6">
+        <label class="tx-caption sp-xs">Left
+          <input type="file" accept="audio/wav,audio/mp3,audio/ogg,audio/webm,audio/aac,audio/x-m4a,audio/flac,audio/aiff,audio/mpeg" data-left>
+        </label>
+      </div>
+      <div class="col-6"> <label>
+          RIGHT
+          <input type="file" accept="audio/wav,audio/mp3,audio/ogg,audio/webm,audio/aac,audio/x-m4a,audio/flac,audio/aiff,audio/mpeg" data-right>
+        </label></div>
+    </div>
 
-    <label>
-      RIGHT
-      <input type="file" accept="audio/wav,audio/mp3,audio/ogg,audio/webm,audio/aac,audio/x-m4a,audio/flac,audio/aiff,audio/mpeg" data-right>
-    </label>
-
-    <div>
-      <button data-convert disabled>convert</button>
+    <div class="row">
+      <div class="col-12">
+          <button data-convert disabled>convert</button>
+      </div>
     </div>
   </div>
-
 </article>

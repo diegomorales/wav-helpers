@@ -19,6 +19,10 @@
   @include tx-body;
 }
 
+.tx-caption {
+  @include tx-caption;
+}
+
 // Spacings
 .sp-l {
   @include space-large;
@@ -26,4 +30,8 @@
 
 .sp-m {
   @include space-medium;
+}
+
+.sp-xs {
+  @include space-xsmall;
 }
