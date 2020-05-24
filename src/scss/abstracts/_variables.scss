@@ -1,0 +1,16 @@
+// Colors
+$black: rgb(30, 30, 30);
+$white: rgb(245, 245, 245);
+
+// Project variables
+$body-font: "Open Sans", sans-serif;
+$body-font-color: rgb(30, 30, 30);
+$base-font-size: 16px;
+
+
+$duration-default: 0.22s;
+$duration-fast: 0.1s;
+$duration-slow: 0.33s;
+$ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+$ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+$ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);

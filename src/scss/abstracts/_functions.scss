@@ -1,0 +1,19 @@
+@function rem($size, $base-size: $base-font-size) {
+  $rem-size: ($size * 1px) / $base-size;
+
+  @if index("px", unit($size)) != null and type_of($size) == "number" {
+    $rem-size: ($size) / $base-size;
+  }
+
+  @return #{$rem-size}rem;
+}
+
+@function em($size, $base-size: $base-font-size) {
+  $em-size: ($size * 1px) / $base-size;
+
+  @if index("px", unit($size)) != null and type_of($size) == "number" {
+    $em-size: ($size) / $base-size;
+  }
+
+  @return #{$em-size}em;
+}
