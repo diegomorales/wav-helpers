@@ -1,0 +1,33 @@
+@function col-percent($cols, $col-count: $grid-columns) {
+  @return (($cols/$col-count) * 100%);
+}
+
+@mixin grid-container {
+  margin: 0 auto;
+  padding: 0 rem($side-padding);
+  max-width: $site-width + (2 * $side-padding);
+  width: 100%;
+}
+
+@mixin grid-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: rem($gutter / 2 * -1);
+  margin-right: rem($gutter / 2 * -1);
+}
+
+@mixin grid-offset($cols: 1, $col-count: $grid-columns) {
+  margin-left: col-percent($cols, $col-count);
+}
+
+@mixin grid-col($cols: 12, $centered: false, $col-count: $grid-columns) {
+  display: block;
+  padding-left: rem($gutter / 2);
+  padding-right: rem($gutter / 2);
+  flex: 1 0 col-percent($cols, $col-count);
+  max-width: col-percent($cols, $col-count);
+
+  @if $centered == true {
+    @include grid-offset(($col-count - $cols) / 2);
+  }
+}

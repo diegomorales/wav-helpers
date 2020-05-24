@@ -19,7 +19,7 @@ const watchTask = series(build, () => {
   startServer()
 
   watch([paths.devTemplates + '**/*.njk'], series(copyIndex, reload))
-  watch([paths.devScss + '**/*.scss'], buildScss)
+  watch([paths.devScss + '**/*.scss'], series(buildScss))
   // watch([paths.devAssets + '**/*.*', `!${paths.devAssets}svg/*.*`], series(copyAssets, reload))
   // watch([paths.devAssets + 'svg/*.*'], series(buildSvgSprite, reload))
 })

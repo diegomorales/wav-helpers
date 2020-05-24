@@ -1,13 +1,8 @@
 module.exports = {
   dev: './src/',
-  get devComponents () {
-    return this.dev + 'components/'
-  },
+
   get devTemplates () {
     return this.dev + 'templates/'
-  },
-  get devPages () {
-    return this.dev + 'pages/'
   },
   get devScss () {
     return this.dev + 'scss/'

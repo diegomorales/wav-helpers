@@ -7,6 +7,13 @@ $body-font: "Open Sans", sans-serif;
 $body-font-color: rgb(30, 30, 30);
 $base-font-size: 16px;
 
+// Grid settings
+$site-width: 960px;
+$side-padding: 16px;
+$gutter: 30px;
+$grid-columns: 12;
+
+// Transition variables
 $duration-default: 0.22s;
 $duration-fast: 0.1s;
 $duration-slow: 0.33s;

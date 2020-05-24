@@ -1,0 +1,28 @@
+.container {
+  @include grid-container;
+}
+
+.row {
+  @include grid-row;
+}
+
+// Column classes
+@for $i from 1 through $grid-columns {
+  .col-#{$i} {
+    @include grid-col($cols: $i);
+  }
+}
+
+// Column centered classes
+@for $i from 1 through $grid-columns {
+  .col-#{$i}-c {
+    @include grid-col($cols: $i, $centered: true);
+  }
+}
+
+// Offset classes
+@for $i from 1 through $grid-columns {
+  .col-offset-#{$i} {
+    @include grid-offset($cols: $i);
+  }
+}
