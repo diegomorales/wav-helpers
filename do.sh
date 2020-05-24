@@ -25,14 +25,22 @@ dev() {
 }
 
 serve() {
-  # Make nvm available
-  . ~/.nvm/nvm.sh
-
-  nvm use
-  npm run build
+  build
 
   cd build
   python ../server.py
+}
+
+deploy() {
+  START=$(date +%s)
+
+  build
+
+  lftp -c "set sftp:auto-confirm yes; open $HOST$ROOT -u $USER,$PASSWORD -p $PORT; glob -a rm -r -f *; mirror -R --parallel=2 -v build/ ./"
+
+  END=$(date +%s)
+  DIFF=$(( $END - $START ))
+  echo "## Duration: $DIFF seconds"
 }
 
 "$@"
