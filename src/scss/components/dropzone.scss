@@ -1,0 +1,13 @@
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: rem(224);
+  border: 1px dashed $black;
+}
+
+.dropzone__caption {
+  text-align: center;
+  pointer-events: none;
+}

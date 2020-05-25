@@ -35,3 +35,8 @@
 .sp-xs {
   @include space-xsmall;
 }
+
+// Other
+.block {
+  display: block;
+}

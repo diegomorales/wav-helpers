@@ -1,4 +1,4 @@
-{% import "macros.njk" as m %}
+{% from "helper-section.njk" import wrapper as section %}
 
 <!doctype html>
 <html lang="en">
@@ -32,7 +32,7 @@
 </header>
 
 <main>
-  {% call m.helperSection('mono2stereo') %}
+  {% call section('mono2stereo') %}
     {% include 'mono2stereo.njk' %}
   {% endcall %}
 </main>

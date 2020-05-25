@@ -1,11 +1,16 @@
+import {dropzone} from 'modules/dropzone'
+
 const config = {
-  leftChannel: '[data-left]',
-  rightChannel: '[data-right]',
+  leftChannel: '#m2st-left',
+  rightChannel: '#m2st-right',
   convertBtn: '[data-convert]'
 }
 
 const factory = (el) => {
   const instance = {}
+  const leftDropzone = dropzone(el.querySelector(config.leftChannel))
+  const rightDropzone = dropzone(el.querySelector(config.rightChannel))
+
   const leftChannel = el.querySelector(config.leftChannel)
   const rightChannel = el.querySelector(config.rightChannel)
   const convertBtn = el.querySelector(config.convertBtn)
@@ -78,10 +83,10 @@ const factory = (el) => {
   }
 
   const bind = () => {
-    leftChannel.addEventListener('change', onLoadLeft)
-    rightChannel.addEventListener('change', onLoadRight)
+    // leftChannel.addEventListener('change', onLoadLeft)
+    // rightChannel.addEventListener('change', onLoadRight)
 
-    convertBtn.addEventListener('click', onClick)
+    // convertBtn.addEventListener('click', onClick)
   }
 
   const createDownload = (audioBuffer, samples) => {

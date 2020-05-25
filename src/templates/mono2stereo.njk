@@ -1,17 +1,20 @@
+{% from "dropzone.njk" import dropzone %}
+
 <article class="helper-module" data-module="m2st">
   <div class="container">
     <h1 class="tx-medium sp-m">Convert two mono tracks to a stereo track</h1>
 
     <div class="row">
       <div class="col-6">
-        <label class="tx-caption sp-xs">Left
-          <input type="file" accept="audio/wav,audio/mp3,audio/ogg,audio/webm,audio/aac,audio/x-m4a,audio/flac,audio/aiff,audio/mpeg" data-left>
-        </label>
+        <span class="block tx-caption sp-xs">Left</span>
+
+        {{ dropzone(id="m2st-left") }}
       </div>
-      <div class="col-6"> <label>
-          RIGHT
-          <input type="file" accept="audio/wav,audio/mp3,audio/ogg,audio/webm,audio/aac,audio/x-m4a,audio/flac,audio/aiff,audio/mpeg" data-right>
-        </label></div>
+      <div class="col-6">
+        <span class="block tx-caption sp-xs">Right</span>
+
+        {{ dropzone(id="m2st-right") }}
+      </div>
     </div>
 
     <div class="row">
