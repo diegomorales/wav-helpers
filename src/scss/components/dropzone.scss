@@ -1,13 +1,45 @@
 .dropzone {
+  padding: rem(10);
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: rem(224);
   border: 1px dashed $black;
+
+  &[data-state="loaded"] {
+    border-style: solid;
+
+    .dropzone__caption {
+      display: none;
+    }
+
+    .dropzone__result {
+      display: block;
+    }
+  }
 }
 
 .dropzone__caption {
   text-align: center;
   pointer-events: none;
+}
+
+.dropzone__result {
+  display: none;
+  width: 100%;
+
+  p {
+    margin-bottom: rem(4);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  audio {
+    display: block;
+    margin-top: rem(16);
+    width: 100%;
+  }
 }

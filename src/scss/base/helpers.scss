@@ -23,6 +23,14 @@
   @include tx-caption;
 }
 
+.tx-small {
+  @include tx-small;
+}
+
+.tx-center {
+  text-align: center;
+}
+
 // Spacings
 .sp-l {
   @include space-large;

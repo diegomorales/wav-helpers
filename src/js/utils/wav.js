@@ -1,5 +1,5 @@
 const bytesFromUInt32 = (number) => {
-  let bytesArray = []
+  const bytesArray = []
   let arrayLength = 4
 
   do {
@@ -14,8 +14,8 @@ const isWav = (audioBuffer) => {
   const view = new DataView(audioBuffer)
 
   // Reference http://soundfile.sapp.org/doc/WaveFormat/
-  let chunkId = String.fromCharCode(...bytesFromUInt32(view.getUint32(0)))
-  let format =  String.fromCharCode(...bytesFromUInt32(view.getUint32(8)))
+  const chunkId = String.fromCharCode(...bytesFromUInt32(view.getUint32(0)))
+  const format = String.fromCharCode(...bytesFromUInt32(view.getUint32(8)))
 
   return chunkId === 'RIFF' && format === 'WAVE'
 }
@@ -47,7 +47,6 @@ const getSubchunks = (audioBuffer) => {
 
     // Set new offset
     offset += 8 + subchunkSize
-
   } while (offset < length)
 
   return subchunks
