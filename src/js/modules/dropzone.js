@@ -40,11 +40,12 @@ const getDuration = (duration) => {
 const factory = (el, options = {}) => {
   const instance = {}
   // const settings = merge({}, defaults, options)
+
+  // Private vars
   const fileInput = el.querySelector('input[type=file]')
   const result = el.querySelector('[data-result]')
   let audioFileInfo = {}
-
-  // Private vars
+  let dragCounter = 0
 
   // Private methods
   const showResult = () => {
@@ -62,13 +63,7 @@ const factory = (el, options = {}) => {
     })
   }
 
-  const onClick = () => {
-    fileInput.click()
-  }
-
-  const onLoadFile = (e) => {
-    const file = e.target.files[0]
-
+  const loadFile = (file) => {
     file.arrayBuffer()
       .then(result => {
         if (!isWav(result)) {
@@ -93,9 +88,60 @@ const factory = (el, options = {}) => {
       })
   }
 
+  const onClick = () => {
+    fileInput.click()
+  }
+
+  const onLoadFile = (e) => {
+    loadFile(e.target.files[0])
+  }
+
+  const onDrop = (e) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    dragCounter = 0
+    el.setAttribute('data-state', '')
+
+    if (e.dataTransfer.files.length === 1 && e.dataTransfer.items[0].type === 'audio/wav') {
+      loadFile(e.dataTransfer.files[0])
+    }
+  }
+
+  const onDragOver = (e) => {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+
+  const onDragEnter = (e) => {
+    dragCounter++
+
+    console.log(e.dataTransfer.items[0].type)
+
+    if (e.dataTransfer.items[0].type !== 'audio/wav') {
+      el.setAttribute('data-state', 'no-accept')
+    } else {
+      el.setAttribute('data-state', 'dragging')
+    }
+  }
+
+  const onDragLeave = () => {
+    dragCounter--
+
+    if (dragCounter === 0) {
+      el.setAttribute('data-state', '')
+    }
+  }
+
   const bind = () => {
     el.addEventListener('click', onClick)
     fileInput.addEventListener('change', onLoadFile)
+
+    // Drag'n'drop
+    el.addEventListener('drop', onDrop, false)
+    el.addEventListener('dragover', onDragOver)
+    el.addEventListener('dragenter', onDragEnter)
+    el.addEventListener('dragleave', onDragLeave)
   }
 
   // Public vars

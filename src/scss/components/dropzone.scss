@@ -18,6 +18,14 @@
       display: block;
     }
   }
+
+  &[data-state="no-accept"] {
+    opacity: 0.5;
+  }
+
+  &[data-state="dragging"] {
+    border-width: 3px;
+  }
 }
 
 .dropzone__caption {
