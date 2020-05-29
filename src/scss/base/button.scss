@@ -1,0 +1,16 @@
+.button {
+  @include tx-caption;
+
+  display: block;
+  padding: rem(12) rem(10);
+  background: none;
+  border: 2px solid $black;
+  min-width: rem(200);
+  border-radius: 5px;
+  color: $black;
+
+  &:disabled,
+  &.disabled {
+    opacity: 0.2;
+  }
+}

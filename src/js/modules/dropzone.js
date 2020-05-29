@@ -1,5 +1,6 @@
 import { round } from 'zorrojs'
-import { getSubchunks, isWav, parseFmtChunk } from 'utils/wav'
+import { getWavInfo } from 'utils/wav'
+import { observer } from 'utils/observer'
 
 // const defaults = {}
 
@@ -41,6 +42,8 @@ const factory = (el, options = {}) => {
   const instance = {}
   // const settings = merge({}, defaults, options)
 
+  Object.assign(instance, observer())
+
   // Private vars
   const fileInput = el.querySelector('input[type=file]')
   const result = el.querySelector('[data-result]')
@@ -54,37 +57,23 @@ const factory = (el, options = {}) => {
     result.innerHTML = config.resultTpl({
       url: audioFileInfo.objectUrl,
       filename: audioFileInfo.filename,
-      type: 'WAV' + (audioFileInfo.subchunks.findIndex(s => s.id === 'bext') > -1 ? ' (BWF)' : ''),
+      type: 'WAV' + (audioFileInfo.subchunks.bext ? ' (BWF)' : ''),
       size: getSize(audioFileInfo.size),
       duration: getDuration(audioFileInfo.duration),
-      sampleRate: audioFileInfo.format.sampleRate + ' Hz',
+      sampleRate: audioFileInfo.format.sampleRate + 'Hz',
       bitDepth: audioFileInfo.format.bitDepth + 'Bit',
       channels: audioFileInfo.format.numberOfChannels === 1 ? 'Mono' : (audioFileInfo.format.numberOfChannels === 2 ? 'Stereo' : audioFileInfo.format.numberOfChannels + 'channels')
     })
   }
 
   const loadFile = (file) => {
-    file.arrayBuffer()
-      .then(result => {
-        if (!isWav(result)) {
-          throw new Error('File is not a WAVE file.')
-        }
-
-        const subchunks = getSubchunks(result)
-        const fmtChunkView = new DataView(result, subchunks.find(c => c.id === 'fmt').offset)
-        const format = parseFmtChunk(fmtChunkView)
-
-        audioFileInfo = {
-          objectUrl: window.URL.createObjectURL(file),
-          arrayBuffer: result,
-          filename: file.name,
-          size: file.size,
-          format,
-          subchunks,
-          duration: subchunks.find(c => c.id === 'data').size / (format.sampleRate * format.numberOfChannels * (format.bitDepth / 8))
-        }
+    getWavInfo(file)
+      .then(info => {
+        audioFileInfo = info
+        console.log(info)
 
         showResult()
+        instance.trigger('loaded', audioFileInfo)
       })
   }
 

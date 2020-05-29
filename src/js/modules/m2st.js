@@ -1,4 +1,4 @@
-import {dropzone} from 'modules/dropzone'
+import { dropzone } from 'modules/dropzone'
 
 const config = {
   leftChannel: '#m2st-left',
@@ -8,89 +8,101 @@ const config = {
 
 const factory = (el) => {
   const instance = {}
+
+  // Private vars
   const leftDropzone = dropzone(el.querySelector(config.leftChannel))
   const rightDropzone = dropzone(el.querySelector(config.rightChannel))
 
-  const leftChannel = el.querySelector(config.leftChannel)
-  const rightChannel = el.querySelector(config.rightChannel)
   const convertBtn = el.querySelector(config.convertBtn)
-  let duration = 0
-  let leftBuffer
-  let rightBuffer
-  const audiocontext = new window.AudioContext()
+  // const audiocontext = new window.AudioContext()
 
-  // Private vars
+  let leftChannel
+  let rightChannel
 
   // Private methods
-  const setDuration = (d) => {
-    duration = Math.max(duration, d)
+  const audioValid = (left, right) => {
+    if (!(left && right)) {
+      return false
+    }
+
+    return left.format.numberOfChannels === 1 &&
+      right.format.numberOfChannels === 1 &&
+      left.format.sampleRate === right.format.sampleRate &&
+      left.format.bitDepth === right.format.bitDepth &&
+      left.duration === right.duration
   }
 
-  const onLoadLeft = (e) => {
-    const file = e.target.files[0]
+  const onLoadLeft = (data) => {
+    leftChannel = data
 
-    file.arrayBuffer()
-      .then(result => audiocontext.decodeAudioData(result))
-      .then(buffer => {
-        leftBuffer = buffer
-        setDuration(leftBuffer.duration)
-
-        if (leftBuffer && rightBuffer) {
-          convertBtn.disabled = false
-        }
-      })
+    convertBtn.disabled = !audioValid(leftChannel, rightChannel)
   }
 
-  const onLoadRight = (e) => {
-    const file = e.target.files[0]
+  const onLoadRight = (data) => {
+    rightChannel = data
 
-    file.arrayBuffer()
-      .then(result => audiocontext.decodeAudioData(result))
-      .then(buffer => {
-        rightBuffer = buffer
-        setDuration(rightBuffer.duration)
-
-        if (leftBuffer && rightBuffer) {
-          convertBtn.disabled = false
-        }
-      })
+    convertBtn.disabled = !audioValid(leftChannel, rightChannel)
   }
 
   const onClick = () => {
-    const offlineContext = new window.OfflineAudioContext(2, duration * 44100, 44100)
+    const blockAlignMono = leftChannel.format.blockAlign
+    const sampleRate = leftChannel.format.sampleRate
+    const bitDepth = leftChannel.format.bitDepth
+    const fileLength = leftChannel.samples * 2 * (bitDepth / 8) + 44 // stereo, 44 bytes for file header
+    const arrayBuffer = new ArrayBuffer(fileLength)
+    const view = new DataView(arrayBuffer)
+    const leftView = new DataView(leftChannel.arrayBuffer, leftChannel.subchunks.data.offset)
+    const rightView = new DataView(rightChannel.arrayBuffer, rightChannel.subchunks.data.offset)
 
-    const leftSource = offlineContext.createBufferSource()
-    const rightSource = offlineContext.createBufferSource()
-    const merger = offlineContext.createChannelMerger(2)
-    leftSource.buffer = leftBuffer
-    rightSource.buffer = rightBuffer
+    // Write file header
+    view.setUint32(0, 0x52494646) // "RIFF"
+    view.setUint32(4, fileLength - 8, true) // file length - 8
+    view.setUint32(8, 0x57415645) // "WAVE"
 
-    // Connections
-    leftSource.connect(merger, 0, 0)
-    rightSource.connect(merger, 0, 1)
-    // leftSource.connect(offlineContext.destination)
-    // rightSource.connect(offlineContext.destination)
-    merger.connect(offlineContext.destination)
+    // Write fmt chunk
+    view.setUint32(12, 0x666d7420) // "fmt "-chunk
+    view.setUint32(16, 16, true) // length = 16 bytes
+    view.setUint16(20, 1, true) // PCM
+    view.setUint16(22, 2, true) // Number of channels
+    view.setUint32(24, sampleRate, true)
+    view.setUint32(28, sampleRate * 2 * (bitDepth / 8), true) // ByteRate
+    view.setUint16(32, 2 * (bitDepth / 8), true) // block-align
+    view.setUint16(34, bitDepth, true)
 
-    leftSource.start(0)
-    rightSource.start(0)
+    // Write data chunk
+    view.setUint32(36, 0x64617461) // "data"-chunk
+    view.setUint32(40, 2 * leftChannel.samples * (bitDepth / 8), true) // length
 
-    // Render
-    offlineContext.startRendering()
-      .then(buffer => {
-        createDownload(buffer, offlineContext.length)
-      })
+    // Write audio data
+
+    let offset = 44
+    let offset2 = 8
+    let i
+    while (offset < fileLength) {
+      for (i = 0; i < blockAlignMono; i++) {
+        view.setInt8(offset + i, leftView.getInt8(offset2 + i))
+      }
+
+      for (i = blockAlignMono; i < 2 * blockAlignMono; i++) {
+        view.setInt8(offset + i, rightView.getInt8(offset2 + i - blockAlignMono))
+      }
+
+      offset += 2 * (bitDepth / 8)
+      offset2 += (bitDepth / 8)
+    }
+
+    makeDownload(new window.Blob([arrayBuffer], { type: 'audio/wav' }))
   }
 
   const bind = () => {
-    // leftChannel.addEventListener('change', onLoadLeft)
-    // rightChannel.addEventListener('change', onLoadRight)
+    convertBtn.addEventListener('click', onClick)
 
-    // convertBtn.addEventListener('click', onClick)
+    leftDropzone.on('loaded', onLoadLeft)
+    rightDropzone.on('loaded', onLoadRight)
   }
 
-  const createDownload = (audioBuffer, samples) => {
-    const newAudioFile = URL.createObjectURL(bufferToWave(audioBuffer, samples))
+  const makeDownload = (blob) => {
+    const newAudioFile = URL.createObjectURL(blob)
     let link = document.createElement('a')
     link.href = newAudioFile
     link.setAttribute('download', 'stereo.wav')
@@ -114,57 +126,4 @@ const factory = (el) => {
 
 export {
   factory as mono2Stereo
-}
-
-function bufferToWave (abuffer, len) {
-  var numOfChan = abuffer.numberOfChannels
-  var length = len * numOfChan * 2 + 44
-  var buffer = new ArrayBuffer(length)
-  var view = new DataView(buffer)
-  var offset = 0
-  var channels = []; var i; var sample
-  var pos = 0
-
-  // write WAVE header - total offset will be 44 bytes - see chart at http://soundfile.sapp.org/doc/WaveFormat/
-  setUint32(0x46464952) // "RIFF"
-  setUint32(length - 8) // file length - 8
-  setUint32(0x45564157) // "WAVE"
-
-  setUint32(0x20746d66) // "fmt " chunk
-  setUint32(16) // length = 16
-  setUint16(1) // PCM (uncompressed)
-  setUint16(numOfChan)
-  setUint32(abuffer.sampleRate)
-  setUint32(abuffer.sampleRate * 2 * numOfChan) // avg. bytes/sec
-  setUint16(numOfChan * 2) // block-align
-  setUint16(16) // 16-bit (hardcoded in this demo)
-
-  setUint32(0x61746164) // "data" - chunk
-  setUint32(length - pos - 4) // chunk length
-
-  // write interleaved data
-  for (i = 0; i < abuffer.numberOfChannels; i++) { channels.push(abuffer.getChannelData(i)) }
-
-  while (pos < length) {
-    for (i = 0; i < numOfChan; i++) { // interleave channels
-      sample = Math.max(-1, Math.min(1, channels[i][offset])) // clamp
-      sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0 // scale to 16-bit signed int
-      view.setInt16(pos, sample, true) // update data chunk
-      pos += 2
-    }
-    offset++ // next source sample
-  }
-
-  // create Blob
-  return new window.Blob([buffer], { type: 'audio/wav' })
-
-  function setUint16 (data) {
-    view.setUint16(pos, data, true)
-    pos += 2
-  }
-
-  function setUint32 (data) {
-    view.setUint32(pos, data, true)
-    pos += 4
-  }
 }
