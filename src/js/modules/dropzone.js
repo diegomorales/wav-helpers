@@ -77,7 +77,11 @@ const factory = (el, options = {}) => {
       })
   }
 
-  const onClick = () => {
+  const onClick = (e) => {
+    if (e.target.closest('audio')) {
+      return
+    }
+
     fileInput.click()
   }
 

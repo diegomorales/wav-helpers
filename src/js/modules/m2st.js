@@ -14,7 +14,6 @@ const factory = (el) => {
   const rightDropzone = dropzone(el.querySelector(config.rightChannel))
 
   const convertBtn = el.querySelector(config.convertBtn)
-  // const audiocontext = new window.AudioContext()
 
   let leftChannel
   let rightChannel

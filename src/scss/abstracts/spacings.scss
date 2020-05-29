@@ -6,6 +6,10 @@
   margin-bottom: rem(40);
 }
 
+@mixin space-small {
+  margin-bottom: rem(24);
+}
+
 @mixin space-xsmall {
   margin-bottom: rem(12);
 }

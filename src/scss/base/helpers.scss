@@ -40,6 +40,10 @@
   @include space-medium;
 }
 
+.sp-s {
+  @include space-small;
+}
+
 .sp-xs {
   @include space-xsmall;
 }
