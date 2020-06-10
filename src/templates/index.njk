@@ -29,6 +29,10 @@
         <li>
           <a href="#mono2stereo">Convert two mono tracks to a stereo track</a>
         </li>
+
+        <li>
+          <a href="#stereo2mono">Split a stereo track to two mono tracks</a>
+        </li>
       </ul>
     </nav>
   </div>
@@ -37,6 +41,10 @@
 <main>
   {% call section('mono2stereo') %}
     {% include 'mono2stereo.njk' %}
+  {% endcall %}
+
+  {% call section('stereo2mono') %}
+    {% include 'stereo2mono.njk' %}
   {% endcall %}
 </main>
 
