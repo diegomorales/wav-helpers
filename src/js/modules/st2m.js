@@ -1,8 +1,16 @@
 import { dropzone } from 'modules/dropzone'
+import { writeDataChunkHeader, writeFmtChunk, writeWavHeader } from 'utils/wav'
 
 const config = {
   stereoTrack: '#st2m-st',
-  convertBtn: '[data-convert]'
+  convertBtn: '[data-convert]',
+  downloads: '[data-downloads]',
+  downloadItem: (url, filename) => `
+<div class="helper-module__download">
+    <audio src="${url}" controls controlsList="nodownload" title="${filename}"></audio>
+    <a href="${url}" download="${filename}">Download <strong>${filename}</strong></a>
+</div>
+  `
 }
 
 const factory = (el) => {
@@ -11,9 +19,9 @@ const factory = (el) => {
   // Private vars
   const trackDropzone = dropzone(el.querySelector(config.stereoTrack))
   const convertBtn = el.querySelector(config.convertBtn)
+  const downloadsContainer = el.querySelector(config.downloads)
 
   let stereoChannel
-  let rightChannel
 
   // Private methods
   const audioValid = (stereo) => stereo.format.numberOfChannels === 2
@@ -25,52 +33,61 @@ const factory = (el) => {
   }
 
   const onClick = () => {
-    const blockAlignMono = stereoChannel.format.blockAlign
-    const sampleRate = stereoChannel.format.sampleRate
+    // Clear downloads
+    downloadsContainer.innerHTML = ''
+    const filename = stereoChannel.filename.match(/(.+)\..+$/)[1]
+
+    const blockAlignStereo = stereoChannel.format.blockAlign
     const bitDepth = stereoChannel.format.bitDepth
     const fileLength = stereoChannel.samples * 1 * (bitDepth / 8) + 44 // mono, 44 bytes for file header
-    const arrayBuffer = new ArrayBuffer(fileLength)
-    const view = new DataView(arrayBuffer)
-    const leftView = new DataView(leftChannel.arrayBuffer, leftChannel.subchunks.data.offset)
+    const arrayBufferL = new ArrayBuffer(fileLength)
+    const arrayBufferR = new ArrayBuffer(fileLength)
+    const viewL = new DataView(arrayBufferL)
+    const viewR = new DataView(arrayBufferR)
+    const stereoView = new DataView(stereoChannel.arrayBuffer, stereoChannel.subchunks.data.offset)
 
     // Write file header
-    view.setUint32(0, 0x52494646) // "RIFF"
-    view.setUint32(4, fileLength - 8, true) // file length - 8
-    view.setUint32(8, 0x57415645) // "WAVE"
+    writeWavHeader(viewL)
+    writeWavHeader(viewR)
 
     // Write fmt chunk
-    view.setUint32(12, 0x666d7420) // "fmt "-chunk
-    view.setUint32(16, 16, true) // length = 16 bytes
-    view.setUint16(20, 1, true) // PCM
-    view.setUint16(22, 2, true) // Number of channels
-    view.setUint32(24, sampleRate, true)
-    view.setUint32(28, sampleRate * 2 * (bitDepth / 8), true) // ByteRate
-    view.setUint16(32, 2 * (bitDepth / 8), true) // block-align
-    view.setUint16(34, bitDepth, true)
-
-    // Write data chunk
-    view.setUint32(36, 0x64617461) // "data"-chunk
-    view.setUint32(40, 2 * leftChannel.samples * (bitDepth / 8), true) // length
-
-    // Write audio data
-
-    let offset = 44
-    let offset2 = 8
-    let i
-    while (offset < fileLength) {
-      for (i = 0; i < blockAlignMono; i++) {
-        view.setInt8(offset + i, leftView.getInt8(offset2 + i))
-      }
-
-      for (i = blockAlignMono; i < 2 * blockAlignMono; i++) {
-        view.setInt8(offset + i, rightView.getInt8(offset2 + i - blockAlignMono))
-      }
-
-      offset += 2 * (bitDepth / 8)
-      offset2 += (bitDepth / 8)
+    const fmtData = {
+      bitDepth: stereoChannel.format.bitDepth,
+      sampleRate: stereoChannel.format.sampleRate,
+      numberOfChannels: 1
     }
 
-    makeDownload(new window.Blob([arrayBuffer], { type: 'audio/wav' }))
+    writeFmtChunk(viewL, fmtData)
+    writeFmtChunk(viewR, fmtData)
+
+    // Write data chunk
+    writeDataChunkHeader(viewL, fmtData, stereoChannel.samples)
+    writeDataChunkHeader(viewR, fmtData, stereoChannel.samples)
+
+    // Write audio data
+    let offset = 44 // fmt header + data chunk header
+    let offset2 = 8 // data chunk header
+    let i
+
+    while (offset < fileLength) {
+      for (i = 0; i < blockAlignStereo; i++) {
+        // Left channel
+        if (i < blockAlignStereo / 2) {
+          viewL.setInt8(offset + i, stereoView.getInt8(offset2 + i))
+        }
+
+        // Right channel
+        if (i >= blockAlignStereo / 2) {
+          viewR.setInt8(offset + i - (blockAlignStereo / 2), stereoView.getInt8(offset2 + i))
+        }
+      }
+
+      offset += blockAlignStereo / 2
+      offset2 += blockAlignStereo
+    }
+
+    makeDownload(new window.Blob([arrayBufferL], { type: 'audio/wav' }), filename + '_L.wav')
+    makeDownload(new window.Blob([arrayBufferR], { type: 'audio/wav' }), filename + '_R.wav')
   }
 
   const bind = () => {
@@ -79,17 +96,15 @@ const factory = (el) => {
     trackDropzone.on('loaded', onLoadTrack)
   }
 
-  const makeDownload = (blob) => {
+  const makeDownload = (blob, filename = 'audio.wav') => {
     const newAudioFile = URL.createObjectURL(blob)
-    let link = document.createElement('a')
-    link.href = newAudioFile
-    link.setAttribute('download', 'stereo.wav')
-    link.style.display = 'none'
+    const tmp = document.createElement('div')
 
-    link = el.appendChild(link)
-    link.click()
+    tmp.innerHTML = config.downloadItem(newAudioFile, filename)
 
-    el.removeChild(link)
+    downloadsContainer.appendChild(tmp.firstElementChild)
+    downloadsContainer.setAttribute('data-state', 'has-files')
+    downloadsContainer.scrollIntoView()
   }
 
   // Public vars

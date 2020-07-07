@@ -93,6 +93,8 @@ const getWavInfo = (file) => new Promise((resolve, reject) => {
     const fmtChunkView = new DataView(resultBuffer, subchunks.fmt.offset)
     const format = parseFmtChunk(fmtChunkView)
 
+    console.log(subchunks.data.size, format.sampleRate, format.bitDepth)
+
     resolve({
       objectUrl: window.URL.createObjectURL(file),
       arrayBuffer: resultBuffer,
@@ -114,13 +116,51 @@ const getWavInfo = (file) => new Promise((resolve, reject) => {
     })
     reader.readAsArrayBuffer(file)
   }
-
 })
 
+/**
+ *
+ * @param {DataView} view
+ */
+const writeWavHeader = (view) => {
+  view.setUint32(0, 0x52494646) // "RIFF"
+  view.setUint32(4, view.byteLength - 8, true) // file length - 8
+  view.setUint32(8, 0x57415645) // "WAVE"
+}
+
+/**
+ *
+ * @param {DataView} view
+ * @param {Object} fmtData
+ */
+const writeFmtChunk = (view, fmtData) => {
+  view.setUint32(12, 0x666d7420) // "fmt "-chunk
+  view.setUint32(16, 16, true) // length = 16 bytes
+  view.setUint16(20, 1, true) // PCM
+  view.setUint16(22, fmtData.numberOfChannels, true) // Number of channels
+  view.setUint32(24, fmtData.sampleRate, true)
+  view.setUint32(28, fmtData.sampleRate * fmtData.numberOfChannels * (fmtData.bitDepth / 8), true) // ByteRate
+  view.setUint16(32, fmtData.numberOfChannels * (fmtData.bitDepth / 8), true) // block-align
+  view.setUint16(34, fmtData.bitDepth, true)
+}
+
+/**
+ *
+ * @param {DataView} view
+ * @param {Object} fmtData
+ * @param {number} samplesCount
+ */
+const writeDataChunkHeader = (view, fmtData, samplesCount) => {
+  view.setUint32(36, 0x64617461) // "data"-chunk
+  view.setUint32(40, fmtData.numberOfChannels * samplesCount * (fmtData.bitDepth / 8), true) // length
+}
 
 export {
   isWav,
   getSubchunks,
   parseFmtChunk,
-  getWavInfo
+  getWavInfo,
+  writeWavHeader,
+  writeFmtChunk,
+  writeDataChunkHeader
 }

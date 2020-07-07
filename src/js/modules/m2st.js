@@ -74,8 +74,8 @@ const factory = (el) => {
 
     // Write audio data
 
-    let offset = 44
-    let offset2 = 8
+    let offset = 44 // fmt header + data chunk header
+    let offset2 = 8 // data chunk header
     let i
     while (offset < fileLength) {
       for (i = 0; i < blockAlignMono; i++) {
