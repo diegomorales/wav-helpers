@@ -1,6 +1,7 @@
 const paths = require('./paths')
 const fs = require('fs')
 const nunjucks = require('nunjucks')
+const minify = require('html-minifier').minify
 
 module.exports = function copyIndex (done) {
   const isProd = process.env.NODE_ENV === 'production'
@@ -22,11 +23,20 @@ module.exports = function copyIndex (done) {
     }
   }
 
-  const rendered = env.render('index.njk', {
+  let rendered = env.render('index.njk', {
     manifest,
     isProd,
     inlineStyle
   })
+
+  if (isProd) {
+    // Minify HTML
+    rendered = minify(rendered, {
+      removeComments: true,
+      collapseWhitespace: true,
+      minifyJS: true
+    })
+  }
 
   fs.writeFileSync(paths.build + 'index.html', rendered, 'utf8')
 
