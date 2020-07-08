@@ -1,4 +1,11 @@
 <IfModule mod_expires.c>
-    ExpiresActive on
-    ExpiresDefault "access plus 1 year"
+  ExpiresActive on
+  ExpiresDefault "access plus 1 year"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^wav-helpers.dmorales-music\.ch [NC]
+  RewriteCond %{SERVER_PORT} 80
+  RewriteRule ^(.*)$ https://wav-helpers.dmorales-music.ch/$1 [R,L]
 </IfModule>
