@@ -1,0 +1,19 @@
+{% from "dropzone.njk" import dropzone %}
+
+<article class="helper-module" data-module="flip">
+  <div class="container">
+    <h1 class="tx-medium sp-m">Stereo Flip</h1>
+
+    <div class="row sp-m">
+      <div class="col-12">
+        {{ dropzone(id="flip-drop") }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <button class="button" data-convert disabled>convert</button>
+      </div>
+    </div>
+  </div>
+</article>
