@@ -29,7 +29,7 @@
     "preprocess": "^3.1.0",
     "rev-hash": "^3.0.0",
     "standard": "^14.3.3",
-    "stylelint": "^13.6.1",
+    "stylelint": "^15.10.1",
     "stylelint-config-standard-scss": "^1.1.0",
     "stylelint-scss": "^3.18.0",
     "webpack": "^4.42.0"
